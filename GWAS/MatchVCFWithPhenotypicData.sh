@@ -14,7 +14,7 @@ scriptUsage() {
     echo "Usage: ./Command.sh *prameters*"
 }
 
-#f
+
 
 # About the script
 # Match the vcf file with the phenotypic data
