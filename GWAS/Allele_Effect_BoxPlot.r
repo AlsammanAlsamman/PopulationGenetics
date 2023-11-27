@@ -140,11 +140,21 @@ for (m in markers)
   # add a title
   ggtitle(paste("Marker :",m,sep=""))+ 
   # no x-axis title
-  xlab("") 
+  xlab("") +
+  # draw the mean on each boxplot
+  stat_summary(fun.y=mean, geom="point", shape=5, size=4, color="red", fill="red") 
   ggsave(paste(ResultFolder,pathSeparator,m,".png",sep=""),p, width = 10, height = 2)
   # add to total data
   phenoGenoData$marker<-m
   phenoGenoData.total<-rbind(phenoGenoData.total,phenoGenoData)
+  # # caculate the mean for each allele
+  # allele0Mean<-mean(phenoGenoData[phenoGenoData$allele==allele0,]$value)
+  # allele1Mean<-mean(phenoGenoData[phenoGenoData$allele==allele1,]$value)
+  # allele2Mean<-mean(phenoGenoData[phenoGenoData$allele==allele2,]$value)
+  # print(paste("Allele 0 mean:",allele0Mean,sep=""))
+  # print(paste("Allele 1 mean:",allele1Mean,sep=""))
+  # print(paste("Allele 2 mean:",allele2Mean,sep=""))
+  # ttest<-t.test(phenoGenoData[phenoGenoData$allele==allele1,]$value,phenoGenoData[phenoGenoData$allele==allele2,]$value)
 }
 
 
