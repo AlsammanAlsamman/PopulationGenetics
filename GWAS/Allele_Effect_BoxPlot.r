@@ -43,10 +43,10 @@ if (is.na(sepPlots)) {
   sepPlots<-FALSE
 }
 
-VCFFILE<-"/home/samman/Documents/publishing/Drought_Ahmed_Master/NewAnalysis/Data/DR.hmp.hmp_NewAlleles.vcf"
-SNPListFile<-"/home/samman/Documents/publishing/Drought_Ahmed_Master/Results/list.txt"
-traitDataFile<-"/home/samman/Documents/publishing/Drought_Ahmed_Master/NewAnalysis/DR-Traits.tsv"
-ResultFolder<-"/home/samman/Documents/publishing/Drought_Ahmed_Master/Results"
+VCFFILE<-"/home/samman/Documents/publishing/Khaled_Fausarium/NewAnalysis/Data/FW_filtered.vcf.recode.vcf"
+SNPListFile<-"/home/samman/Documents/publishing/Khaled_Fausarium/NewAnalysis/1_vcf2gwasout/TargetSNPs.txt"
+traitDataFile<-"/home/samman/Documents/publishing/Khaled_Fausarium/NewAnalysis/Data/Phenotype.tsv"
+ResultFolder<-"/home/samman/Documents/publishing/Khaled_Fausarium/NewAnalysis/1_vcf2gwasout/boxplot"
 
 #setwd("/home/samman/Documents/publishing/Drought_Ahmed_Master/NewAnalysis/someResults")
 
@@ -77,62 +77,87 @@ traitData$taxa<-rownames(traitData)
 # melt the data
 traitData<-melt(traitData,id.vars="taxa")
 
-# select only the phenotypes in the SNP list
-traitData<-traitData[traitData$variable %in% as.character(SNPList$V2),]
-
 # select only the SNPs in the SNP list
 genotype<-genotype[,colnames(genotype) %in% as.character(SNPList$V1)]
-
+traitData
 
 # select for first marker
-marker<-as.character(SNPList$V1[1])
-phenotype<-as.character(traitData$variable[1])
+markers<- SNPList$V1
+phenoGenoData.total<-data.frame(matrix(ncol = 5, nrow = 0))
+# phenotype<-as.character(traitData$variable[1])
+for (m in markers)
+{
+  print(paste("Plotting for marker ",m,sep=""))
+  # get genotype for the marker
+  genotype1<-genotype[,m]
+  # get marker index
+  markerIndex<-which(colnames(genotype)==m)
+  # get marker allele
+  markerAllele<-snp.allele[markerIndex]
+  # select alelles
+  allele0Genotypes<-names(genotype1[genotype1==0])
+  allele1Genotypes<-names(genotype1[genotype1==1])
+  allele2Genotypes<-names(genotype1[genotype1==2])
 
-for(snp in unique()
+  # does marker name contain ">"
+  if (grepl(">",m)) {
+    # alleles values AA, AB, BB
+    # get alleles contains letter > letter
+    allelestrlist <- unlist(strsplit(m,":"))
+    allelestr <- allelestrlist[length(allelestrlist)]
+    alleles<-unlist(strsplit(allelestr,">"))
+    # alleles<-unlist(strsplit(markerAllele,">"))
+    allele0<-paste(alleles[1],alleles[1],sep="")
+    allele1<-paste(alleles[1],alleles[2],sep="")
+    allele2<-paste(alleles[2],alleles[2],sep="")
+  } else
+  {
+    # alleles values AA, AB, BB
+    alleles<-unlist(strsplit(markerAllele,"/"))
+    allele0<-paste(alleles[1],alleles[1],sep="")
+    allele1<-paste(alleles[1],alleles[2],sep="")
+    allele2<-paste(alleles[2],alleles[2],sep="")
+  }
+
+  # create a table for the three alleles
+  allelesTable<-data.frame(Genotype = allele0Genotypes, allele=rep(allele0,length(allele0Genotypes)))
+  # add allele1
+  allelesTable<-rbind(allelesTable,data.frame(Genotype = allele1Genotypes, allele=rep(allele1,length(allele1Genotypes))))
+  # add allele2
+  allelesTable<-rbind(allelesTable,data.frame(Genotype = allele2Genotypes, allele=rep(allele2,length(allele2Genotypes))))
+
+  # merge with trait data
+  phenoGenoData<-merge(traitData,allelesTable,by.x="taxa",by.y="Genotype")
+  # plot marker effect
+  
+  p<-ggplot(phenoGenoData, aes(x=allele, y=value, fill=allele)) +
+  geom_boxplot() +
+  geom_jitter(width = 0.2) +
+  # use facet_wrap to plot each phenotype in a separate panel
+  facet_wrap(~variable, ncol=10) +
+  # use theme_bw() to remove the gray background
+  theme_bw() + 
+  # add a title
+  ggtitle(paste("Marker :",m,sep=""))+ 
+  # no x-axis title
+  xlab("") 
+  ggsave(paste(ResultFolder,pathSeparator,m,".png",sep=""),p, width = 10, height = 2)
+  # add to total data
+  phenoGenoData$marker<-m
+  phenoGenoData.total<-rbind(phenoGenoData.total,phenoGenoData)
+}
 
 
+# # plot all markers in one plot
+# p<-ggplot(phenoGenoData.total, aes(x=allele, y=value, fill=allele)) +
+#   geom_boxplot() +
+#   geom_jitter(width = 0.2) +
+#   # use facet_wrap to plot each phenotype in a separate panel
+#   facet_grid(~marker+variable) +
+#   # use theme_bw() to remove the gray background
+#   theme_bw() + 
+#   # no x-axis title
+#   xlab("") 
+#   ggsave(paste(ResultFolder,pathSeparator,"AllMarkers.png",sep=""),p, width = 20, height = 10)
 
 
-
-
-# # get genotype for the marker
-# genotype1<-genotype[,marker]
-# # get marker index
-# markerIndex<-which(colnames(genotype)==marker)
-# # get marker allele
-# markerAllele<-snp.allele[markerIndex]
-
-# # select alelles
-# allele0Genotypes<-names(genotype1[genotype1==0])
-# allele1Genotypes<-names(genotype1[genotype1==1])
-# allele2Genotypes<-names(genotype1[genotype1==2])
-
-# # alleles values AA, AB, BB
-# alleles<-unlist(strsplit(markerAllele,"/"))
-# allele0<-paste(alleles[1],alleles[1],sep="")
-# allele1<-paste(alleles[1],alleles[2],sep="")
-# allele2<-paste(alleles[2],alleles[2],sep="")
-
-
-# # create a table for the three alleles
-# allelesTable<-data.frame(Genotype = allele0Genotypes, allele=rep(allele0,length(allele0Genotypes)))
-# # add allele1
-# allelesTable<-rbind(allelesTable,data.frame(Genotype = allele1Genotypes, allele=rep(allele1,length(allele1Genotypes))))
-# # add allele2
-# allelesTable<-rbind(allelesTable,data.frame(Genotype = allele2Genotypes, allele=rep(allele2,length(allele2Genotypes))))
-
-# # merge with trait data
-# phenoGenoData<-merge(traitData,allelesTable,by.x="taxa",by.y="Genotype")
-# # select for the phenotype 
-# #phenoGenoData<-phenoGenoData[phenoGenoData$variable==phenotype,]
-
-# # plot marker effect
-# pdf(paste(ResultFolder,pathSeparator,marker,"_",phenotype,".pdf",sep=""),width=10,height=10)
-# ggplot(phenoGenoData, aes(x=allele, y=value, fill=allele)) +
-# geom_boxplot() +
-# geom_jitter(width = 0.2) +
-# # use facet_wrap to plot each phenotype in a separate panel
-# facet_wrap(~variable, ncol=10) +
-# # use theme_bw() to remove the gray background
-# theme_bw() 
-# dev.off()

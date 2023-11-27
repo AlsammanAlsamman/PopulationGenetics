@@ -169,6 +169,20 @@ if (chrTable!="") {
 
 #5826041|F|0-30:G>A-30:G>A 5825086 8776047|F|0-63:C>T-63:C>T 11063413|F|0-57:T>C-57:T>C  5825195 5825384|F|0-47:T>C-47:T>C 10268227|F|0-54:C>T-54:C>T  10264793|F|0-44:C>G-44:C>G  10269791|F|0-26:C>T-26:C>T  10264807|F|0-44:G>C-44:G>C  5825194|F|0-9:A>T-9:A>T
 #dashSNPs<-c("5826041|F|0-30:G>A-30:G>A","8776047|F|0-63:C>T-63:C>T","11063413|F|0-57:T>C-57:T>C","5825384|F|0-47:T>C-47:T>C","10268227|F|0-54:C>T-54:C>T","10264793|F|0-44:C>G-44:C>G","10269791|F|0-26:C>T-26:C>T","10264807|F|0-44:G>C-44:G>C","5825194|F|0-9:A>T-9:A>T","5825086")
+
+dashSNPs <- c("5826041|F|0-30:G>A-30:G>A"
+,"5825086"
+,"8776047|F|0-63:C>T-63:C>T"
+,"11063413|F|0-57:T>C-57:T>C"
+,"5825195"
+,"5825384|F|0-47:T>C-47:T>C"
+,"10268227|F|0-54:C>T-54:C>T"
+,"10264793|F|0-44:C>G-44:C>G"
+,"10269791|F|0-26:C>T-26:C>T"
+,"10264807|F|0-44:G>C-44:G>C"
+,"5825194|F|0-9:A>T-9:A>T")
+
+
 p<-plotmanahhten(gwasData,
                 logmin = log.Sign,
                 fdrcutoff = fdrcutoff,
@@ -177,7 +191,7 @@ p<-plotmanahhten(gwasData,
                 TraitName=traitName,
                 fdrSignSNPs = SNPsFDR,
                 matchChrTable = T,
-                # dash.this = dashSNPs
+                dash.this = dashSNPs
                 )
 
 
@@ -213,7 +227,7 @@ ggsave(qq, filename = paste(ResultFolder,"/pdf/",traitName,"_qq.pdf",sep=""), wi
 
 # # png
 # merged plot
-ggsave(qqpp, filename = paste(ResultFolder,"/",traitName,"_qqpp.png",sep=""), width = 15, height = 4, dpi = 300, device = "png")
+ggsave(qqpp, filename = paste(ResultFolder,"/",traitName,"_qqpp.png",sep=""), width = 10, height = 3, dpi = 300, device = "png")
 # # separate plots
 ggsave(p, filename = paste(ResultFolder,"/ppplot/",traitName,".png",sep=""), width = 10, height = 3, dpi = 300)
 ggsave(qq, filename = paste(ResultFolder,"/qqplot/",traitName,"_qq.png",sep=""), width = 15, height = 4, dpi = 300, device = "png")

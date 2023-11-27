@@ -151,7 +151,7 @@ plotmanahhten <- function(gwasResults,
       segment.ncp = 3,
       segment.linetype = 3,
       size = 2,
-      segment.color = colorTransparancy("#000000", 60),
+      segment.color = colorTransparancy("#0a6428", 60),
       segment.angle = 20
     )
   
