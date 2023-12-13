@@ -14,7 +14,7 @@ import sys
 
 # if no arguments provided print the help message
 if len(sys.argv) == 1:
-    print("Usage: getSamplesOrderFromVCF.py <inputFile>")
+    print("Usage: getSamplesOrderFromVCF.py <inputFile> <outputFile>")
     sys.exit(1)
 
 # check that we have 1 arguments

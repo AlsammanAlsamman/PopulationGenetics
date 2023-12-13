@@ -43,12 +43,12 @@ bestKnownK<-as.numeric(args[5])
 maxK<-as.numeric(args[6])
 
 
-#resultFolder<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_Amounane_24_11_2023/RESULTS/Field/LEA/plots"
-#passportFile<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_Amounane_24_11_2023/Data/Field/Field_Meta.tsv"
-# orderFile<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_Amounane_24_11_2023/RESULTS/Field/LEA/Run/TaxaNames.txt"
-#LEAoutFolder<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_Amounane_24_11_2023/RESULTS/Field/LEA/Run/bestKs"
-#bestKnownK<-10
-# maxK<-12
+resultFolder<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_4_28_11_2023/RESULTS/LEA/plots"
+passportFile<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_4_28_11_2023/Data/MetaData_new.tsv"
+orderFile<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_4_28_11_2023/RESULTS/LEA/Run/TaxaNames.txt"
+LEAoutFolder<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_4_28_11_2023/RESULTS/LEA/Run/bestKs"
+bestKnownK<-10
+maxK<-12
 
 # if maxK is not provided
 if (is.na(maxK))
@@ -93,6 +93,8 @@ for (i in 2:ncol(passport))
 {
   passport[,i]<-as.factor(passport[,i])
 }
+passport
+indvOrder
 # if some individuals are not in the passport file, add them with unknown passport group
 if (length(setdiff(indvOrder,passport$Taxa))>0)
 {
