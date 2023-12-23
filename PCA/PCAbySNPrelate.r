@@ -49,10 +49,10 @@ if (length(args)==2) {
   dataFolder<-resultsFolder
 }
 
-# VCFFILE<-"/home/samman/Documents/publishing/Drought_Ahmed_Master/NewAnalysis/Data/DR.vcf"
-# resultsFolder<-"/home/samman/Documents/publishing/Drought_Ahmed_Master/NewAnalysis/PCA"
-# dataFolder<-resultsFolder
-# MetaDataFile="/home/samman/Documents/publishing/Drought_Ahmed_Master/NewAnalysis/Data/PassPort.txt"
+VCFFILE<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_5_23_12_2023/Data/GenotypeData_filtered.vcf"
+resultsFolder<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_5_23_12_2023/RESULTS/PCA"
+dataFolder<-resultsFolder
+MetaDataFile="/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_5_23_12_2023/Data/MetaData.tsv"
 
 
 
