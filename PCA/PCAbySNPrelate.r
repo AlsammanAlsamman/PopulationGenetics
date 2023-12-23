@@ -49,12 +49,10 @@ if (length(args)==2) {
   dataFolder<-resultsFolder
 }
 
-VCFFILE<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_5_23_12_2023/Data/GenotypeData_filtered.vcf"
-resultsFolder<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_5_23_12_2023/RESULTS/PCA"
-dataFolder<-resultsFolder
-MetaDataFile="/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_5_23_12_2023/Data/MetaData.tsv"
-
-
+# VCFFILE<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_5_23_12_2023/Data/GenotypeData_filtered.vcf"
+# resultsFolder<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_5_23_12_2023/RESULTS/PCA"
+# dataFolder<-resultsFolder
+# MetaDataFile="/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_5_23_12_2023/Data/MetaData.tsv"
 
 # Check folders 
 # if folder path does not end with path separator then add it
@@ -81,7 +79,7 @@ PCA.eigenval.percentage<-PCA.eigenval/sum(PCA.eigenval)*100
 eigenvalues<-data.frame(PC=1:length(PCA.eigenval),Eigenvalue=PCA.eigenval.percentage)
 
 #create folder for SNPrelate PCA results
-dir.create(paste(resultsFolder,"/SNPrelate_PCA",sep=""))
+dir.create(paste(resultsFolder,"SNPrelate_PCA",sep=""))
 
 
 p<-ggplot(eigenvalues,aes(x=PC,y=Eigenvalue))+geom_bar(stat="identity")+theme_bw()+theme(axis.text.x = element_text(angle = 90, hjust = 1))+labs(x="PC",y="Eigenvalue (%)")
@@ -98,13 +96,25 @@ ggsave(paste(resultsFolder,"/SNPrelate_PCA/PCA.png",sep=""),p,width=10,height=5)
 
 # if metadata file exists then plot the PCA with metadata
 
-# check if metadata file exists
+# check if metadata file is not provided exit
+if(MetaDataFile=="NA"){
+  stop("No metadata file provided")
+}
+
 MetaData<-read.csv(MetaDataFile,header=TRUE,sep="\t",stringsAsFactors = FALSE, row.names = 1)
+# if the metadata contains columns with the same name of the PCs then rename them
+if (any(colnames(MetaData)==colnames(PCA.eigenvect))) {
+ # which columns have the same name
+  sameCol<-which(colnames(MetaData)%in%colnames(PCA.eigenvect))
+  # rename them
+  colnames(MetaData)[sameCol]<-paste0(colnames(MetaData)[sameCol],"_meta")
+  print("Some metadata columns have the same name of the PCs, they are renamed by adding _meta to their names")
+}
+
 # add sample.id column to metadata
 rownames(PCA.eigenvect)<-PCA$sample.id
 # merge metadata with eigenvectors
 PCA.eigenvect.meta<-merge(PCA.eigenvect,MetaData,by="row.names")
-
 # foreach column in metadata, color the PCA plot
 for (i in 1:ncol(MetaData)){
   # convert to factor
@@ -114,6 +124,7 @@ for (i in 1:ncol(MetaData)){
   p<-ggplot(PCA.eigenvect.meta,aes(x=PC1,y=PC2))+
   geom_point(aes(color=metCol))+
   theme_bw()+labs(x=paste0("PC1 (",round(PC1.variance,2),"%)"),y=paste0("PC2 (",round(PC2.variance,2),"%)"))+
+  
   # legend at bottom
   theme(legend.position="left")
   ggsave(paste(resultsFolder,"/SNPrelate_PCA/PCA_",colnames(MetaData)[i],".png",sep=""),p,width=5,height=5)
