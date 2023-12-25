@@ -43,7 +43,7 @@ library(xlsx)
 library(ggplot2)
 # library(devtools)
 # install_github("nikostourvas/PopGenUtils")
-library("PopGenUtils")
+# library("PopGenUtils")
 
 # vcfFile<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Anna_Nassima/5_analysis/Data/BreadGenotype.vcf"
 # ResultFolder<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Anna_Nassima/5_analysis/Results"

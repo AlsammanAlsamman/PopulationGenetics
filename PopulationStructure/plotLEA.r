@@ -43,10 +43,10 @@ bestKnownK<-as.numeric(args[5])
 maxK<-as.numeric(args[6])
 
 
-resultFolder<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_4_28_11_2023/RESULTS/LEA/plots"
-passportFile<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_4_28_11_2023/Data/MetaData_new.tsv"
-orderFile<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_4_28_11_2023/RESULTS/LEA/Run/TaxaNames.txt"
-LEAoutFolder<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_4_28_11_2023/RESULTS/LEA/Run/bestKs"
+# resultFolder<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_4_28_11_2023/RESULTS/LEA/plots"
+# passportFile<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_4_28_11_2023/Data/MetaData_new.tsv"
+# orderFile<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_4_28_11_2023/RESULTS/LEA/Run/TaxaNames.txt"
+# LEAoutFolder<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_4_28_11_2023/RESULTS/LEA/Run/bestKs"
 bestKnownK<-10
 maxK<-12
 

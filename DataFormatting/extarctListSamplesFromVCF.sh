@@ -11,7 +11,7 @@
 
 scriptUsage() {
     echo "This script is used to run ****"
-    echo "Usage: ./Command.sh *prameters*"
+    echo "Usage: ./extractListSamplesFromVCF.sh <vcfFile> <fileList> <outFile>"
 }
 
 # if no input, print usage
@@ -20,13 +20,21 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
-# vcfFile=$1
-
-vcfFile="/home/samman/Documents/ICARDA/DrSawsan/Eman/Chickpea_MAGIC.vcf.gz"
-fileList="/home/samman/Documents/ICARDA/DrSawsan/Eman/GenotypesList.txt"
+vcfFile=$1
+fileList=$2
+outFile=$3
 
 # extract samples from vcf file using vcftools
-vcftools --gzvcf $vcfFile --keep $fileList --recode --recode-INFO-all --out Chickpea_MAGIC
+# if the is compressed, use --gzvcf
+if [[ $vcfFile == *.gz ]]; then
+    vcftools --gzvcf $vcfFile --keep $fileList --recode --recode-INFO-all --out $outFile
+else
+    vcftools --vcf $vcfFile --keep $fileList --recode --recode-INFO-all --out $outFile
+fi
 
+# get the new vcf file sample names
+newVcfFile=$(ls $outFile".recode.vcf")
+newVcfFileSampleNames=$(grep "#CHROM" $newVcfFile | cut -f10-)
+echo $newVcfFileSampleNames | tr ' ' '\n' > $outFile".samples"
 
 
