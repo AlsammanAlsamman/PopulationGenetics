@@ -59,10 +59,9 @@ library(ape)
 library(pegas)
 # reading the input file
 
-vcffile<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_5_23_12_2023/Data/GenotypeData_sample.vcf"
-metadataFile<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_5_23_12_2023/Data/sample_meta.tsv"
-popName<-"Pedigree"
-subPopName<-"P1.IG"
+vcffile<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_1/Data/GenotypicData_filered.vcf"
+snpListFile<-""
+
 ResultFolder<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_5_23_12_2023/amova_results/"
 
 # reading the vcf file

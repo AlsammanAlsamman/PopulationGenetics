@@ -50,7 +50,7 @@ library(ggplot2)
 # ResultFolder = args[3]
 
 vcfFile = "/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_5_23_12_2023/Data/GenotypeData_filtered.vcf"
-SNPAlleleListFile = "/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_5_23_12_2023/Data/TargetSNPs.txt"
+SNPAlleleListFile = "/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_5_23_12_2023/Data/TargetSNPs_test.txt"
 ResultFolder = "/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_5_23_12_2023/RESULTS/AlleleFreq"
 
 #  read SNP list
