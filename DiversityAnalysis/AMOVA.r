@@ -54,204 +54,56 @@ library(adegenet)
 library(vcfR)
 library(ggplot2)
 # brewer
-library(RColorBrewer)
 library(ape)
 library(pegas)
 # reading the input file
+library(dplyr)
+library(tidyr)
+library(reshape2)
 
 vcffile<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_1/Data/GenotypicData_filered.vcf"
-snpListFile<-""
+metadataFile<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_1/Data/MetaData_test.tsv"
+ResultFolder<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_1/RESULTS/AMOVA"
+pop<-"EliteInfo_Anna"
+subPop<-"type_Anna"
+# if the result folder does not exist then create it
+if (!dir.exists(ResultFolder)) {
+  dir.create(ResultFolder)
+}
 
-ResultFolder<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_5_23_12_2023/amova_results/"
-
-# reading the vcf file
-vcf<-read.vcf(vcffile)
-vcfR<-read.vcfR(vcffile)
 # reading the metadata file
 metadata<-read.table(metadataFile,header = T,sep = filesep,stringsAsFactors = F, row.names = 1)
-# select the required columns
-metadata<-metadata[,c(popName,subPopName)]
 
-# # convert the genclone object
-# vcfR<-read.vcfR(vcffile)
-# # select the required samples
-# vcfR<-vcfR[rownames(metadata),]
-# rownames(metadata)
-
-colnames(vcf)<-paste(getCHROM(vcfR),getPOS(vcfR),sep="_")
-
-# check if there is any duplicated column names
-if (anyDuplicated(colnames(vcf))) {
-  print("There is duplicated marker locations")
-  print("Removing duplicated marker locations")
-  # remove duplicated column names
-  vcf<-vcf[,!duplicated(colnames(vcf))]
-}
-
-
-# select from the vcf file the required samples
-vcf<-vcf[rownames(metadata),]
-# select the required samples
-metadata<-metadata[rownames(vcf),]
-# convert to genlight object
-genIndObj<-loci2genind(vcf,ploidy=1)
-# select from the genIndObj the required samples
-metadata<-metadata[rownames(genIndObj@tab),]
-# check sevearl things
-# is the metadata and the genIndObj have the same number of samples
-if (nrow(metadata)!=nInd(genIndObj)) {
-  print("The number of samples in the metadata and the genIndObj are not the same")
-  print("Please check the metadata file")
-  quit()
-}
+vcfData <- read.vcf(vcffile)
+# convert the vcf object to genind object
+g<-loci2genind(vcfData)
+# convert the genind object to genclone object
+g<-as.genclone(g)
+# set the ploidy to 2
+ploidy(g)<-2
+# filter the genind object for missing data and minor allele frequency (MAF)
+g<-missingno(g, cutoff = 0.05)
+# get samples from the metadata file
+vcfSamples<-rownames(g@tab)
+# order the samples in the metadata file as in the genind object
+metadata<-metadata[vcfSamples,]
+# convert geno to data frame
+metadata<-as.data.frame(metadata)
+strata(g)<-metadata
+# Results
+amovaResults<-data.frame(Df=0,SumSq=0,MeanSq=0,SNP=NA,rowname=NA)
+# components
+amovaComponents<-data.frame(Sigma=0,Percentage=0,SNP=NA,rowname=NA,varianceCategory=NA)
+# statphi
+amovaStatphi<-data.frame(Phi=0,SNP=NA,rowname=NA)
 
 
-# is the metadata and the genIndObj have the same samples
-if (!all(rownames(metadata)==rownames(genIndObj))) {
-  print("The samples in the metadata and the genIndObj are not the same")
-  print("Please check the metadata file")
-  quit()
-}
+Formular<-paste("~",pop,sep="")
+Formular<-as.formula(Formular)
 
+Amovacc<-poppr.amova(g,Formular, method="ade4", threads = 5)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-# #!/usr/bin/env Rscript
-
-# ############################################## About Author #########################################
-# # Created by: Alsamman M. Alsamman                                                                  #
-# # Emails: smahmoud [at] ageri.sci.eg or A.Alsamman [at] cgiar.org or SammanMohammed [at] gmail.com  #
-# # License: MIT License - https://opensource.org/licenses/MIT                                        #
-# # Disclaimer: The script comes with no warranty, use at your own risk                               #
-# # This script is not intended for commercial use                                                    #
-# #####################################################################################################
-
-# # What is this system linux or windows
-# system<-Sys.info()[1]
-# # if system is windows then change the path separator
-# if (system=="Windows") {
-#   pathSeparator<-"\\"
-# } else {
-#   pathSeparator<-"/"
-# }
-
-# #######################################################################################
-
-
-# args = commandArgs(trailingOnly=TRUE)
-
-# # test if there is at least one argument: if not, return an error
-# if (length(args)==0) {
-#   stop("At least one argument must be supplied (input file).n", call.=FALSE)
-# }
-
-# if (length(args) < 3) {
-#   print(paste("Usage: Rscript AMOVAbySNPs.r vcffile SNPAlleleList ResultFolder"))
-#   quit()
-# }
-
-# vcffile<-args[1]
-# SNPAlleleListFile<-args[2]
-# ResultFolder<-args[3]
-
-# #######################################################################################
-
-# # Load the required libraries
-# library(poppr)
-# library(vegan)
-# library(adegenet)
-# library(vcfR)
-# library(ape)
-# library(ggplot2)
-# library(pegas)
-# library(dplyr)
-# library(tidyr)
-# library(reshape2)
-
-# #vcffile="/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_5_23_12_2023/Data/sample_geno.vcf"
-# # SNPAlleleListFile="/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_5_23_12_2023/Data/someSNPs.txt"
-# # ResultFolder="/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_5_23_12_2023/RESULTS/AMOVA"
-
-# # if the result folder does not exist then create it
-# if (!dir.exists(ResultFolder)) {
-#   dir.create(ResultFolder)
-# }
-
-# # get a matrix of the genotypes
-# convertGeno2Binary<-function(geno) {
-#   # convert the genotypes to binary
-#   geno[geno=="0/0"]<-0
-#   geno[geno=="0/1"]<-1
-#   geno[geno=="1/0"]<-1
-#   geno[geno=="1/1"]<-2
-#   geno[geno=="./."] <- NA
-#   return(geno)
-# }
-
-# # reading the SNP list
-# SNPList<-read.table(SNPAlleleListFile,header=FALSE,sep="\t")
-# # reading the vcf file
-# vcfR<-read.vcfR(vcffile)
-# # get the genotypes
-# geno<-vcfR@gt
-# # add the SNP names
-# rownames(geno)<-as.character(vcfR@fix[,3])
-# geno<-geno[rownames(geno) %in% SNPList[,1],]
-# # convert the genotypes to binary
-# geno<-convertGeno2Binary(geno)
-# # group samples by marker value
-# geno<-t(geno)
-# # change the values to characters , 0->A, 1->H, 2->B
-# geno[geno==0]<-"A"
-# geno[geno==1]<-"H"
-# geno[geno==2]<-"B"
-# geno[is.na(geno)]<-"N"
-# # convert to data frame
-# # save the snpMetadata to file in the run folder
-# snpMetaFile<-paste(ResultFolder,pathSeparator,"snpMeta.txt",sep="")
-# # remove the first row in the geno
-# geno<-geno[-1,]
-# # write the snp metadata to file
-# write.table(geno,snpMetaFile,sep="\t",quote=FALSE,row.names=TRUE,col.names=TRUE)
-# # get the target SNPs
-# targetSNPs<-colnames(geno)
-# # Read The VCF file and convert it to genind object
-# vcfData <- read.vcf(vcffile)
-# # convert the vcf object to genind object
-# g<-loci2genind(vcfData)
-# # convert the genind object to genclone object
-# g<-as.genclone(g)
-# # set the ploidy to 2
-# ploidy(g)<-2
-# # filter the genind object for missing data and minor allele frequency (MAF)
-# g<-missingno(g, cutoff = 0.05)
-# # get samples from the metadata file
-# vcfSamples<-rownames(g@tab)
-# # order the samples in the metadata file as in the genind object
-# geno<-geno[vcfSamples,]
-
-# # convert geno to data frame
-# geno<-as.data.frame(geno)
-# strata(g)<-geno
-
-# # Results
-# amovaResults<-data.frame(Df=0,SumSq=0,MeanSq=0,SNP=NA,rowname=NA)
-# # components
-# amovaComponents<-data.frame(Sigma=0,Percentage=0,SNP=NA,rowname=NA,varianceCategory=NA)
-# # statphi
-# amovaStatphi<-data.frame(Phi=0,SNP=NA,rowname=NA)
-
+Amovacc
 # print("Starting AMOVA")
 
 # # do the same for each SNP
@@ -414,3 +266,4 @@ if (!all(rownames(metadata)==rownames(genIndObj))) {
 
 # # set.seed(1999)
 # #monpopsignif   <- randtest(amovacc, nrepet = 999)
+
