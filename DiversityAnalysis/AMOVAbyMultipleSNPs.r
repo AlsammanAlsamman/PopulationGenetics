@@ -50,9 +50,17 @@ library(dplyr)
 library(tidyr)
 library(reshape2)
 
-#vcffile="/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_5_23_12_2023/Data/sample_geno.vcf"
-# SNPAlleleListFile="/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_5_23_12_2023/Data/someSNPs.txt"
-# ResultFolder="/home/samman/Documents/ICARDA_Zakaria/Tasks/Nassima_5_23_12_2023/RESULTS/AMOVA"
+vcffile="/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_1/Data/GenotypicData_filered.vcf"
+SNPAlleleListFile="/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_1/Data/SNPsTarget.txt"
+ResultFolder="/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_1/RESULTS"
+
+# create a subfolder for the current run using the current date and time
+dateTimestamp<-Sys.time()
+
+# remove the spaces and the colons from the date and time
+dateTimestamp<-gsub(" ","_",dateTimestamp)
+dateTimestamp<-gsub(":","_",dateTimestamp)
+ResultFolder<-paste(ResultFolder,pathSeparator,dateTimestamp,sep="")
 
 # if the result folder does not exist then create it
 if (!dir.exists(ResultFolder)) {
@@ -79,6 +87,11 @@ geno<-vcfR@gt
 # add the SNP names
 rownames(geno)<-as.character(vcfR@fix[,3])
 geno<-geno[rownames(geno) %in% SNPList[,1],]
+# check if there are data for the SNPs in the list
+if (nrow(geno)==0) {
+  print("No data for the SNPs in the list")
+  quit()
+}
 # convert the genotypes to binary
 geno<-convertGeno2Binary(geno)
 # group samples by marker value
@@ -124,7 +137,6 @@ amovaComponents<-data.frame(Sigma=0,Percentage=0,SNP=NA,rowname=NA,varianceCateg
 amovaStatphi<-data.frame(Phi=0,SNP=NA,rowname=NA)
 
 print("Starting AMOVA")
-
 # do the same for each SNP
 for (i in 1:length(targetSNPs)) {
   print(paste("Running AMOVA for SNP ",targetSNPs[i],sep=""))
@@ -135,10 +147,8 @@ for (i in 1:length(targetSNPs)) {
   
   # run the amova
   snpAmovacc<-poppr.amova(g,snpFormular, method="ade4", threads = 5)
-
   # add the results to the data frame
   # results
-  
   SNP.amovaResults <- snpAmovacc$results
   SNP.amovaResults$SNP<-currentSNP
   SNP.amovaResults$rowname<-rownames(SNP.amovaResults)
