@@ -199,7 +199,7 @@ for(i in 1:length(phenotypesNames))
       #      col = "red",
       #      vjust = - 1)  
       # save the plot
-      ggsave(paste0(phenoName,"_",lociName,".png"), width = 10, height = 10)
+      ggsave(paste0(ResultFolder,pathSeparator,lociName,"_",phenoName,".png"), width = 10, height = 10)
     }
   }
 }
