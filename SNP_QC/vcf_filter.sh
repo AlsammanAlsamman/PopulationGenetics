@@ -12,9 +12,11 @@ if [ $# -eq 0 ]; then
 fi
 
 # get the input parameters
-inputData=$1
-outData=$2
-vcftools --vcf $inputData --maf 0.05 --max-missing 0.5 --recode --recode-INFO-all --out $outData  --min-alleles 2 
+
+inputData=gbs_diversity_AGENT_wheat_ChineseSpringV2_1_biosampleIDs_MAF0o0001_ENA_woDup.vcf
+outData=filtered/gbs_diversity_AGENT_wheat_ChineseSpringV2_1_biosampleIDs_MAF0o0001_ENA_woDup.vcf
+
+vcftools --vcf $inputData --maf 0.01 --max-missing 0.2 --recode --recode-INFO-all --out $outData  --min-alleles 2 
 
 # because vcftools add .recode.vcf to the output file, we need to remove it
 mv $outData.recode.vcf $outData
