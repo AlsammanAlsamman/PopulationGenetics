@@ -13,8 +13,8 @@ fi
 
 # get the input parameters
 
-inputData=gbs_diversity_AGENT_wheat_ChineseSpringV2_1_biosampleIDs_MAF0o0001_ENA_woDup.vcf
-outData=filtered/gbs_diversity_AGENT_wheat_ChineseSpringV2_1_biosampleIDs_MAF0o0001_ENA_woDup.vcf
+inputData=$1
+outData=$2
 
 vcftools --vcf $inputData --maf 0.01 --max-missing 0.2 --recode --recode-INFO-all --out $outData  --min-alleles 2 
 

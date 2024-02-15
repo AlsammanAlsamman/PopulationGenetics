@@ -194,7 +194,7 @@ passportPlot<-groupsCountQ %>%
   # add facet wrap
   facet_grid(~passportGroup,scales="free_x")+
   theme(strip.text.x = element_text(size = 6, face = "bold"),
-  strip.text.y = element_text(size = 6, face = "bold"))+
+  strip.text.y = element_text(size = 12, face = "bold"))+
   # remove x axis title
   theme(axis.title.x = element_blank())
 
@@ -209,9 +209,9 @@ plotList[[kn]]<-joinedPLot
 # join all plots in plotList
 GrandPlot<-ggarrange(plotlist = plotList, ncol = 1, legend = "right", common.legend = TRUE)
 # save plot
-ggsave(paste(resultFolder,"/","structurePlotGrandPlot.pdf",sep="/"),GrandPlot,width=plotWidth,height=plotHeight)
+ggsave(paste(resultFolder,"/","structurePlotGrandPlot.pdf",sep=""),GrandPlot,width=plotWidth,height=plotHeight)
 # save plot of best Known K
-ggsave(paste(resultFolder,"/","structurePlotBestK.pdf",sep="/"),plotList[[bestKnownK]],width=plotWidth,height=5)
+ggsave(paste(resultFolder,"/","structurePlotBestK.pdf",sep=""),plotList[[bestKnownK]],width=plotWidth,height=5)
 
 # create table for all Ks 
 # create a data frame for all Ks

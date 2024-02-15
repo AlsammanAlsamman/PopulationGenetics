@@ -61,20 +61,27 @@ library(dplyr)
 library(tidyr)
 library(reshape2)
 
-vcffile<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_1/Data/GenotypicData_filered.vcf"
-metadataFile<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_1/Data/MetaData_test.tsv"
-ResultFolder<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_1/RESULTS/AMOVA"
-pop<-"EliteInfo_Anna"
-subPop<-"type_Anna"
+vcffile<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_Morocco_meeting_final/Data/BreadWheatBefore_InUSE.vcf"
+metadataFile<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_Morocco_meeting_final/Results/LEA/plots/allKs_passportGroups.txt"
+
+ResultFolder<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_Morocco_meeting_final/Results/AMOVA"
+pop<-"K7"
+
 # if the result folder does not exist then create it
 if (!dir.exists(ResultFolder)) {
   dir.create(ResultFolder)
 }
-
+filesep<-"\t"
 # reading the metadata file
 metadata<-read.table(metadataFile,header = T,sep = filesep,stringsAsFactors = F, row.names = 1)
 
 vcfData <- read.vcf(vcffile)
+# # subset to keep only the SNPs 250
+# vcfData <- vcfData[1:250]
+# subset to keep only random 250 SNPs
+vcfData <- vcfData[sample(1:nrow(vcfData), 250),]
+
+
 # convert the vcf object to genind object
 g<-loci2genind(vcfData)
 # convert the genind object to genclone object
@@ -100,6 +107,10 @@ amovaStatphi<-data.frame(Phi=0,SNP=NA,rowname=NA)
 
 Formular<-paste("~",pop,sep="")
 Formular<-as.formula(Formular)
+
+# choose random markers
+set.seed(1999)
+
 
 Amovacc<-poppr.amova(g,Formular, method="ade4", threads = 5)
 
