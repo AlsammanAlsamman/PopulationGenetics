@@ -1,3 +1,14 @@
 {
-    "r.lsp.diagnostics": false
+    "r.lsp.diagnostics": false,
+    "cSpell.words": [
+        "ageri",
+        "Alsamman",
+        "cgiar",
+        "Samman",
+        "smahmoud"
+    ],
+    "cSpell.ignoreWords": [
+        "ggsave"
+    ],
+    "cSpell.diagnosticLevel": "Hint"
 }

@@ -43,10 +43,10 @@ if (is.na(sepPlots)) {
   sepPlots<-FALSE
 }
 
-VCFFILE<-"/home/samman/Documents/publishing/Khaled_Fausarium/NewAnalysis/Data/FW_filtered.vcf.recode.vcf"
-SNPListFile<-"/home/samman/Documents/publishing/Khaled_Fausarium/NewAnalysis/1_vcf2gwasout/TargetSNPs.txt"
-traitDataFile<-"/home/samman/Documents/publishing/Khaled_Fausarium/NewAnalysis/Data/Phenotype.tsv"
-ResultFolder<-"/home/samman/Documents/publishing/Khaled_Fausarium/NewAnalysis/1_vcf2gwasout/boxplot"
+# VCFFILE<-"/home/samman/Documents/publishing/Khaled_Fausarium/NewAnalysis/Data/FW_filtered.vcf.recode.vcf"
+# SNPListFile<-"/home/samman/Documents/publishing/Khaled_Fausarium/NewAnalysis/1_vcf2gwasout/TargetSNPs.txt"
+# traitDataFile<-"/home/samman/Documents/publishing/Khaled_Fausarium/NewAnalysis/Data/Phenotype.tsv"
+# ResultFolder<-"/home/samman/Documents/publishing/Khaled_Fausarium/NewAnalysis/1_vcf2gwasout/boxplot"
 
 #setwd("/home/samman/Documents/publishing/Drought_Ahmed_Master/NewAnalysis/someResults")
 
@@ -64,6 +64,12 @@ snp.allele <- read.gdsn(index.gdsn(genofile, "snp.allele"))
 snp.rs.id  <- read.gdsn(index.gdsn(genofile, "snp.rs.id"))
 # genotype
 genotype <- read.gdsn(index.gdsn(genofile, "genotype"))
+# get chromosome
+chromosome <- read.gdsn(index.gdsn(genofile, "snp.chromosome"))
+# get position
+position <- read.gdsn(index.gdsn(genofile, "snp.position"))
+snpchr<-paste(chromosome,position,sep=":")
+
 rownames(genotype) <- as.character(sample.id)
 colnames(genotype) <- as.character(snp.rs.id)
 closefn.gds(genofile)

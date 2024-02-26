@@ -61,11 +61,12 @@ library(dplyr)
 library(tidyr)
 library(reshape2)
 
-vcffile<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_Morocco_meeting_final/Data/BreadWheatBefore_InUSE.vcf"
-metadataFile<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_Morocco_meeting_final/Results/LEA/plots/allKs_passportGroups.txt"
+vcffile<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_final_analysis_Feb_24_2023/Data/BreadWheatBefore_Filtered_No_Indels.vcf"
+metadataFile<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_final_analysis_Feb_24_2023/Data/passportData.order.representative.tsv"
 
-ResultFolder<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_Morocco_meeting_final/Results/AMOVA"
-pop<-"K7"
+ResultFolder<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_final_analysis_Feb_24_2023/oo"
+
+pop<-"LastCross"
 
 # if the result folder does not exist then create it
 if (!dir.exists(ResultFolder)) {

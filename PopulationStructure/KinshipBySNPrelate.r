@@ -36,33 +36,19 @@ library(ggplot2)
 library(ggpubr)
 library(RColorBrewer)
 library(pheatmap)
+library(openxlsx)
+
 
 
 
 
 VCFFILE<-args[1]
 resultsFolder<-args[2]
-dataFolder<-args[3]
 
-# if data folder is not provided then use the results folder
-if (length(args)==2) {
-  dataFolder<-resultsFolder
+if (length(args)==3) {
+  print("Metadata file is provided")
+  metaFile<-args[3]
 }
-
-VCFFILE<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_Morocco_meeting_final/Data/BreadWheatBefore_filtered_selectedSamples.vcf.recode.vcf"
-resultsFolder<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_Morocco_meeting_final/Results/Kinship"
-dataFolder<-resultsFolder
-
-# Check folders 
-# if folder path does not end with path separator then add it
-if (substr(resultsFolder,nchar(resultsFolder),nchar(resultsFolder))!=pathSeparator) {
-  resultsFolder<-paste(resultsFolder,pathSeparator,sep="")
-}
-if (substr(dataFolder,nchar(dataFolder),nchar(dataFolder))!=pathSeparator) {
-  dataFolder<-paste(dataFolder,pathSeparator,sep="")
-}
-
-
 
 
 
@@ -101,8 +87,14 @@ sessionInfo()
 sink()
 
 # add metadata to the kinship matrix
-metFile<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_Morocco_meeting_final/Data/passportData.order.representative.tsv"
-metadata<-read.table(metFile,header=T,sep="\t",stringsAsFactors = F, row.names = 1)
+
+print(metaFile)
+# if metadata file is not provided then stop
+if (length(args)<3) {
+  stop("Metadata file is not provided", call.=FALSE)
+}
+
+metadata<-read.table(metaFile,header=T,sep="\t",stringsAsFactors = F, row.names = 1)
 
 
 
@@ -118,9 +110,18 @@ pheatmap(kinshipMatrix,main="Kinship Matrix",annotation_col=metadata, annotation
 show_colnames = F, show_rownames = F)
 dev.off()
 
-kinshipMatrix
+# close the gds file
+closefn.gds(genofile)
+
+# plot heatmap using  heatmap.2 function
+png(paste(resultsFolder,"/kinshipMatrix.png",sep=""),width=1000,height=1000)
+heatmap(kinshipMatrix,main="Kinship Matrix",trace="none",col=brewer.pal(9,"Blues"))
+dev.off()
 
 # save the kinship matrix as a text file
 write.table(as.data.frame(kinshipMatrix),file=paste(resultsFolder,"/kinshipMatrix.txt",sep=""),sep="\t")
 
+# save the kinship matrix as a xlsx file
+write.xlsx(as.data.frame(kinshipMatrix),paste(resultsFolder,"/kinshipMatrix.xlsx",sep=""))
 
+# 

@@ -16,7 +16,8 @@ fi
 inputData=$1
 outData=$2
 
-vcftools --vcf $inputData --maf 0.01 --max-missing 0.2 --recode --recode-INFO-all --out $outData  --min-alleles 2 
-
+vcftools --vcf $inputData --maf 0.01 --max-missing 0.8 --recode --recode-INFO-all --out $outData  --min-alleles 2 
+# to filter compressed vcf file, use the following command
+# vcftools --gzvcf $inputData --maf 0.01 --max-missing 0.2 --recode --recode-INFO-all --out $outData  --min-alleles 2
 # because vcftools add .recode.vcf to the output file, we need to remove it
-mv $outData.recode.vcf $outData
+# mv $outData.recode.vcf $outData

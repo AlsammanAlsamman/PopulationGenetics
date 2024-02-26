@@ -47,4 +47,3 @@ vcf<-vcf[,10:ncol(vcf)]
 # group the genotypes by the locus
 vcf<-t(vcf)
 # get the number of genotypes
-
