@@ -50,9 +50,9 @@ library(dplyr)
 library(tidyr)
 library(reshape2)
 
-vcffile="/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_final_analysis_Feb_24_2023/Data/someSNPs.vcf"
-SNPAlleleListFile="/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_final_analysis_Feb_24_2023/Data/TargetSNPs.txt"
-ResultFolder="/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_final_analysis_Feb_24_2023/Results/snpAMOVA"
+vcffile="/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_final_analysis_Feb_24_2023/ngsAMOVA/BreadWheatBefore_Filtered.vcf"
+SNPAlleleListFile="/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_final_analysis_Feb_24_2023/important_SNPs/pops.txt"
+ResultFolder="/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_final_analysis_Feb_24_2023/important_SNPs"
 
 # create a subfolder for the current run using the current date and time
 dateTimestamp<-Sys.time()
