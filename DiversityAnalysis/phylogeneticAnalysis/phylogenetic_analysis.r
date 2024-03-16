@@ -63,6 +63,7 @@ vcffile<-args[1]
 metaFile<-args[2]
 ResultsFolder<-args[3]
 outFolder<-args[4]
+
 maf<-0.05
 missing.rate<-0.2
 
@@ -75,7 +76,7 @@ if (length(args) > 4) {
 
 
 # vcffile<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_final_analysis_Feb_24_2023/Data/BreadWheatBefore_Filtered.vcf"
-#metaFile<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_final_analysis_Feb_24_2023/Data/passportData.order.representative.tsv"
+# metaFile<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_final_analysis_Feb_24_2023/Data/passportData.order.representative.tsv"
 # ResultsFolder<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_final_analysis_Feb_24_2023/Results"
 
 ResultsFolder<-paste(ResultsFolder,"/phylogeneticAnalysis",sep="")
@@ -100,7 +101,7 @@ genofile <- openfn.gds(gdsfilename)
 
 ### Calculate the distance matrix and phylogenetic tree
 #Calculate Distance matrix
-dissMatrix  <-  snpgdsDiss(genofile, maf=maf, missing.rate= missing.rate)
+dissMatrix  <-  snpgdsDiss(genofile, maf=maf, missing.rate= missing.rate, autosome.only = FALSE, num.thread=4, verbose=TRUE)
 
 # Hierarchical clustering
 snpHCluster <-  snpgdsHCluster(dissMatrix, sample.id=NULL, need.mat=TRUE, hang=0.25)
@@ -122,7 +123,6 @@ snpgdsDrawTree(
     font=1, 
     cex.lab=0.5,
     lwd=10,
-    leaflab="none",
     cex.axis=2)
 dev.off()
 
@@ -136,7 +136,6 @@ snpgdsDrawTree(
     font=1, 
     cex.lab=0.5,
     lwd=10,
-    leaflab="none",
     cex.axis=2)
 dev.off()
 
@@ -217,7 +216,7 @@ for (i in 1:ncol(metaData)) {
 }
 
 
-
+metCol <- ""
 # calculate the sub distance matrix in each group
 library(reshape2)
 
