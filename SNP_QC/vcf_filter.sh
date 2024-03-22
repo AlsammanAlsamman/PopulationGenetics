@@ -15,9 +15,37 @@ fi
 
 inputData=$1
 outData=$2
+maxMissing=0.8
+minAlleles=2
+maf=0.01
+compreesed=0
 
-vcftools --vcf $inputData --maf 0.01 --max-missing 0.8 --recode --recode-INFO-all --out $outData  --min-alleles 2 
-# to filter compressed vcf file, use the following command
-# vcftools --gzvcf $inputData --maf 0.01 --max-missing 0.2 --recode --recode-INFO-all --out $outData  --min-alleles 2
+# maxMissing=0.8
+# minAlleles=2
+# maf=0.01
+
+# inputData="ICARDA_GBS_771522_SNPs_2299.gz"
+# outData="ICARDA_GBS_771522_SNPs_2299_filtered"
+# maxMissing=0.9
+# minAlleles=2
+# maf=0.05
+# compreesed=1
+
+vcftools $(if [ $compreesed -eq 1 ]; then echo "--gzvcf"; else echo "--vcf"; fi)\
+    $inputData --maf $maf\
+    --max-missing $maxMissing \
+    --min-alleles $minAlleles \
+    --recode --recode-INFO-all --out $outData
+
+# use bcftools to ge stastistics
+bcftools stats $outData.recode.vcf > $outData.stats
+
+
 # because vcftools add .recode.vcf to the output file, we need to remove it
 # mv $outData.recode.vcf $outData
+
+#########################Info########################
+# --max-missing <float>
+# Exclude sites on the basis of the proportion of missing 
+#data (defined to be between 0 and 1, where 0 allows sites 
+#that are completely missing and 1 indicates no missing data allowed).

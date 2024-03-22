@@ -26,4 +26,6 @@ bgzip $inputVCF
 tabix -p vcf $inputVCF".gz"
 
 
-
+# # compress the vcf file using zip
+# inputVCF="Barley_Selected_Genotypes.vcf"
+# zip $inputVCF".zip" $inputVCF

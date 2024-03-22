@@ -75,9 +75,9 @@ if (length(args) > 4) {
 }
 
 
-# vcffile<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_final_analysis_Feb_24_2023/Data/BreadWheatBefore_Filtered.vcf"
-# metaFile<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_final_analysis_Feb_24_2023/Data/passportData.order.representative.tsv"
-# ResultsFolder<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_final_analysis_Feb_24_2023/Results"
+vcffile<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_final_analysis_Feb_24_2023/Data/BreadWheatBefore_Filtered.vcf"
+metaFile<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_final_analysis_Feb_24_2023/Data/passportData.order.representative.tsv"
+ResultsFolder<-"/home/samman/Documents/ICARDA_Zakaria/Tasks/Fatima_final_analysis_Feb_24_2023/Results"
 
 ResultsFolder<-paste(ResultsFolder,"/phylogeneticAnalysis",sep="")
 # create the folder if not exists
@@ -207,7 +207,19 @@ create_iTOL_annotation_file<-function(metaData, metCol, outfilename, ResultsFold
   for (i in 1:nrow(metaData)) {
     cat(rownames(metaData)[i],"\t",colors[as.numeric(metaData[i,metCol])],"\t", as.character(metaData[i,metCol]),"\n",sep="")
   }
-   sink()
+  sink()
+
+  # create a range strip
+  sink(paste(ResultsFolder,"/",outfilename,".range.txt",sep=""))
+  cat("TREE_COLORS\n")
+  cat("SEPARATOR TAB\n")
+  cat("DATA\n")
+  for (i in 1:nrow(metaData)) {
+    cat(rownames(metaData)[i],"\t","range","\t",colors[as.numeric(metaData[i,metCol])],"\t", as.character(metaData[i,metCol]),"\n",sep="")
+  }
+  sink()
+
+
 }
 
 for (i in 1:ncol(metaData)) {
@@ -216,52 +228,133 @@ for (i in 1:ncol(metaData)) {
 }
 
 
-metCol <- ""
 # calculate the sub distance matrix in each group
 library(reshape2)
+getDistanceData<-function(metCol,metaData,dissMatrixTable)
+{
+  categories<-levels(metaData[,metCol])
+  # create a list of the categories
+  distCatList<-list()
+  for (i in 1:length(categories)) {
+    cat("Calculating the distance matrix for category ",categories[i],"\n")
+    # get the samples in the category
+    samplesInCategory<-rownames(metaData[metaData[,metCol]==categories[i],])
+    # get the sub distance matrix
+    subDissMatrix<-dissMatrixTable[samplesInCategory,samplesInCategory]
+    # remove the upper triangle
+    subDissMatrix[upper.tri(subDissMatrix)]<-NA
+    subsamplesNames<-rownames(subDissMatrix)
+    # remove the diagonal
+    diag(subDissMatrix)<-NA
+    # convert to matrix
+    subDissMatrix<-as.matrix(subDissMatrix)
+    # add row names
+    rownames(subDissMatrix)<-subsamplesNames
+    # add column names
+    colnames(subDissMatrix)<-subsamplesNames
+    subDissMatrix<-melt(subDissMatrix)
+    # remove the NA
+    subDissMatrix<-subDissMatrix[!is.na(subDissMatrix$value),]
+    # add to the list
+    distCatList[[i]]<-subDissMatrix
+    # save the sub distance matrix
+    #write.table(subDissMatrix, file=paste(ResultsFolder,"/",outfilename,".",categories[i],".dissMatrix.tsv",sep=""), sep="\t", quote=F, row.names=T, col.names=T)
+  }
+  # add names to the list
+  names(distCatList)<-categories
+  # convert to a data frame with the category as a column
+  catDataFrame<-data.frame(sample1=character(), sample2=character(), value=numeric(), category=character(), stringsAsFactors=F)
+  
+  for (i in 1:length(distCatList)) {
+    catDataFrame<-rbind(catDataFrame, cbind(distCatList[[i]], category=names(distCatList)[i]))
+  }
+  return(catDataFrame)
 
-categories<-levels(metaData[,metCol])
-
-# create a list of the categories
-distCatList<-list()
-
-for (i in 1:length(categories)) {
-  cat("Calculating the distance matrix for category ",categories[i],"\n")
-  # get the samples in the category
-  samplesInCategory<-rownames(metaData[metaData[,metCol]==categories[i],])
-  # get the sub distance matrix
-  subDissMatrix<-dissMatrixTable[samplesInCategory,samplesInCategory]
-  # remove the upper triangle
-  subDissMatrix[upper.tri(subDissMatrix)]<-NA
-  subsamplesNames<-rownames(subDissMatrix)
-  # remove the diagonal
-  diag(subDissMatrix)<-NA
-  # convert to matrix
-  subDissMatrix<-as.matrix(subDissMatrix)
-  # add row names
-  rownames(subDissMatrix)<-subsamplesNames
-  # add column names
-  colnames(subDissMatrix)<-subsamplesNames
-  subDissMatrix<-melt(subDissMatrix)
-  # remove the NA
-  subDissMatrix<-subDissMatrix[!is.na(subDissMatrix$value),]
-  # add to the list
-  distCatList[[i]]<-subDissMatrix
-  # save the sub distance matrix
-  #write.table(subDissMatrix, file=paste(ResultsFolder,"/",outfilename,".",categories[i],".dissMatrix.tsv",sep=""), sep="\t", quote=F, row.names=T, col.names=T)
 }
-# add names to the list
-names(distCatList)<-categories
-# convert to a data frame with the category as a column
-catDataFrame<-data.frame(sample1=character(), sample2=character(), value=numeric(), category=character(), stringsAsFactors=F)
 
-for (i in 1:length(distCatList)) {
-  catDataFrame<-rbind(catDataFrame, cbind(distCatList[[i]], category=names(distCatList)[i]))
+
+DistCatFrame<-as.data.frame(matrix(NA, nrow = 0, ncol = 5))
+colnames(DistCatFrame)<-c("sample1", "sample2", "value", "category", "col")
+for (i in 1:ncol(metaData)) {
+print(colnames(metaData)[i])
+ ColCatDataFrame<-getDistanceData(colnames(metaData)[i],metaData,dissMatrixTable)
+ ColCatDataFrame$col<-colnames(metaData)[i]
+ DistCatFrame<-rbind(DistCatFrame, ColCatDataFrame)
 }
 
-# plot as a boxplot
-pdf(paste(ResultsFolder,"/",outfilename,".boxplot.pdf",sep=""), width=30, height=8)
-ggplot(catDataFrame, aes(x=category, y=value, fill=category)) + geom_boxplot() + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + labs(title="Distance matrix boxplot", x="Category", y="Distance")+
-# remove outliers
-  scale_y_continuous(limits = quantile(catDataFrame$value, c(0.05, 0.95)))
-dev.off()
+
+
+# make it a function
+getDistanceBoxplot<-function(col,metaData,DistCatFrame)
+{
+ dplot<-ggplot(DistCatFrame[DistCatFrame$col==colnames(metaData)[col],], aes(x=category, y=value, fill=category)) +
+    geom_boxplot() +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+    labs(title=paste("Distance boxplot for ",colnames(metaData)[col],sep=""), x="Category", y="Distance")+
+    theme(axis.title.x=element_blank(), axis.title.y=element_blank())+
+    # remove _ from the category
+    scale_x_discrete(labels = function(x) gsub("_"," ",x))
+  return(dplot)
+}
+
+
+# convert to function
+getTtestMatrixPlot<-function(col,metaData,DistCatFrame)
+{
+  # create a matrix of comparisons
+  catnume<-unique(metaData[,col])
+  compMatrix<-matrix(NA, nrow = length(catnume), ncol = length(catnume))
+  rownames(compMatrix)<-catnume
+  colnames(compMatrix)<-catnume
+  # calculate the t-test for each comparison
+  for (i in 1:nrow(compMatrix)) {
+    for (j in 1:ncol(compMatrix)) {
+      if (i!=j) {
+        catDataFrame<-DistCatFrame[DistCatFrame$col==colnames(metaData)[col],]
+        catDataFrame<-catDataFrame[catDataFrame$category %in% c(rownames(compMatrix)[i],colnames(compMatrix)[j]),]
+        ttest<-t.test(catDataFrame$value~catDataFrame$category)
+        cat("Comparing ",rownames(compMatrix)[i]," and ",colnames(compMatrix)[j],"\n")
+        cat("p-value = ",ttest$p.value,"\n")
+        compMatrix[i,j]<-ttest$p.value
+      }
+    }
+  }
+  # replace p-values with stars * < 0.05, ** < 0.01, *** < 0.001
+  compMatrixStars<-compMatrix
+  # repalce > 0.05 with 0
+  compMatrixStars[compMatrixStars>0.05]<-NA
+  compMatrixStars[compMatrixStars<0.001]<-3
+  compMatrixStars[compMatrixStars<0.01]<-2
+  compMatrixStars[compMatrixStars<0.05]<-1
+  # replace NA with 0
+  compMatrixStars[is.na(compMatrixStars)]<-0
+  # replace _ with " "
+  colnames(compMatrixStars)<-gsub("_"," ",colnames(compMatrixStars))
+  rownames(compMatrixStars)<-gsub("_"," ",rownames(compMatrixStars))
+  # convert colnames to character
+  colnames(compMatrixStars)<-as.character(colnames(compMatrixStars))
+  rownames(compMatrixStars)<-as.character(rownames(compMatrixStars))
+
+  # plot the matrix using ggplot and color with 4 colors
+  matPlot<-ggplot(melt(compMatrixStars), aes(Var1, Var2, fill = value)) +
+    geom_tile(color = "white") +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+    labs(title="T-test p-values matrix", x="Category", y="Category")+
+    # make it categorical
+    scale_fill_gradientn(colours=c("white", "blue", "green", "red"), limits=c(0,3), breaks=c(0,1,2,3), labels=c("Not significant", "< 0.05", "< 0.01", "< 0.001"))+
+    # remove x and y titles
+    theme(axis.title.x=element_blank(), axis.title.y=element_blank())
+  return(matPlot)
+}
+
+
+
+# create for all columns
+for (coln in 1:ncol(metaData)) {
+  dplot<-getDistanceBoxplot(coln,metaData,DistCatFrame)
+  tplot<-getTtestMatrixPlot(coln,metaData,DistCatFrame)
+  mplot<-grid.arrange(dplot, tplot, ncol=2, widths=c(3, 1))
+  ggsave(paste(ResultsFolder,"/",outfilename,".",colnames(metaData)[coln],".distance.boxplot.png",sep=""), mplot, width=20, height=5, units="in", dpi=300)
+}
